@@ -422,9 +422,9 @@ const QUESTIONS = [
     type: "multi",
     opts: [
       { t: "Das Wort Modell, ital. modello, aus lat. modulus, steht auch für die maßstäblich dreidimensionale Darstellung einer Sache.", c: true },
-      { t: "Das Modell steht immer in Bezug zu einem bestimmten Maßstab, der darüber entscheidet, welche Funktion das Modell haben kann.", c: false },
+      { t: "Das Modell steht immer in Bezug zu einem bestimmten Maßstab, der darüber entscheidet, welche Funktion das Modell haben kann.", c: true },
       { t: "Die Model dient zum Formen von plastischem Material und wurde nur in der Renaissance eingesetzt.", c: false },
-      { t: "Modelle sind vorwiegend Repräsentationen von Phänomenen, Daten und Theorien.", c: true }
+      { t: "Modelle sind vorwiegend Repräsentationen von Phänomenen, Daten und Theorien.", c: false }
     ]
   },
   {
@@ -606,22 +606,22 @@ const QUESTIONS = [
   },
   {
     q: "Welche Art von Modell oder Prototyp wird in der interdisziplinären Produktentwicklung genutzt? (Modellbegriff nach Frigg & Hartmann)",
-    type: "multi",
+    type: "single",
     opts: [
-      { t: "Theorie-orientierte Modelle (Strukturelle und semantische Ansicht der Theorien / Modelle unabhängig von Theorien)", c: true },
-      { t: "Darstellungs-orientierte Modelle (Physische oder Fiktive Objekte / Beschreibungen / Gleichungen / Manipulierte Darstellungen)", c: true },
-      { t: "Philosophische Modelle (Realismus versus Antirealismus / Modelle und die Naturgesetze / Modelle zur wissenschaftlichen Erklärung)", c: true },
+      { t: "Theorie-orientierte Modelle (Strukturelle und semantische Ansicht der Theorien / Modelle unabhängig von Theorien)", c: false },
+      { t: "Darstellungs-orientierte Modelle (Physische oder Fiktive Objekte / Beschreibungen / Gleichungen / Manipulierte Darstellungen)", c: false },
+      { t: "Philosophische Modelle (Realismus versus Antirealismus / Modelle und die Naturgesetze / Modelle zur wissenschaftlichen Erklärung)", c: false },
       { t: "Erkenntnis-orientierte Modelle (Experiment und Simulation / Übertragung auf Zielkontext)", c: true }
     ]
   },
   {
     q: "Welche der folgenden Aussagen beschreibt die Eigenschaften der drei Kunststoffarten Duroplaste, Elastomere und Thermoplaste KORREKT in Bezug auf ihre Eignung im Modellbau?",
-    type: "single",
+    type: "multi",
     opts: [
       { t: "Thermoplaste sind für den Modellbau ungeeignet, da sie sich bei Erwärmung nicht verformen lassen; Elastomere sind ideal für tragende Strukturen.", c: false },
       { t: "Durch die thermisch-plastische und reversible (umkehrbar) Verformbarkeit der Thermoplaste eignen sie sich besonders gut für den Modellbau und insbesondere für das Tiefziehen.", c: true },
       { t: "Elastomere lassen sich durch Erwärmung gut umformen und sind daher vielseitig einsetzbar im Modellbau; Duroplaste werden bevorzugt für transparente Fensterteile verwendet.", c: false },
-      { t: "Polystyrol-Hartschaumstoffe werden als Dämmstoff eingesetzt, sind aber auch sehr gut bearbeitbar und haben eine homogene Struktur. Fein- und mittelporiger Hartschaum aus extrudiertem Polystyrol ist der Standardwerkstoff im Modellbau.", c: false }
+      { t: "Polystyrol-Hartschaumstoffe werden als Dämmstoff eingesetzt, sind aber auch sehr gut bearbeitbar und haben eine homogene Struktur. Fein- und mittelporiger Hartschaum aus extrudiertem Polystyrol ist der Standardwerkstoff im Modellbau.", c: true }
     ]
   },
   {
