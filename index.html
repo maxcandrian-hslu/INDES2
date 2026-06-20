@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>INDES 2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#6c63ff;
+  --secondary:#48cfad;
+  --danger:#ef4444;
+  --warning:#fbbf24;
+  --bg1:#0f0c29;
+  --bg2:#302b63;
+  --bg3:#24243e;
+  --card:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.1);
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+}
+html,body{min-height:100%;width:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);
+  background-attachment:fixed;
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  padding:20px 16px 40px;
+  min-height:100vh;
+}
+.container{width:100%;max-width:620px}
+
+/* ---- SCREENS ---- */
+.screen{display:none;animation:fadeIn 0.3s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ---- CARD ---- */
+.card{
+  background:var(--card);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:36px 32px;
+  margin-bottom:16px;
+}
+@media(max-width:480px){.card{padding:24px 20px}}
+
+/* ---- START ---- */
+.logo-wrap{
+  width:80px;height:80px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  border-radius:22px;
+  margin:0 auto 24px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;
+  box-shadow:0 8px 32px rgba(108,99,255,.4);
+}
+h1{font-size:28px;font-weight:800;text-align:center;margin-bottom:6px;letter-spacing:-0.5px}
+.subtitle{color:var(--muted);text-align:center;margin-bottom:32px;font-size:15px}
+.badge-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.badge{
+  background:rgba(108,99,255,.15);
+  border:1px solid rgba(108,99,255,.3);
+  color:#a78bfa;
+  border-radius:100px;
+  padding:4px 12px;
+  font-size:12px;font-weight:600;
+}
+
+input[type=text]{
+  display:block;width:100%;
+  padding:14px 18px;
+  background:rgba(255,255,255,0.07);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  color:white;font-size:16px;
+  margin-bottom:12px;
+  outline:none;
+  transition:border-color .2s;
+}
+input[type=text]:focus{border-color:var(--primary)}
+input[type=text]::placeholder{color:#4a5568}
+
+.btn{
+  display:block;width:100%;
+  padding:15px 20px;
+  background:linear-gradient(135deg,var(--primary) 0%,#a855f7 100%);
+  border:none;border-radius:12px;
+  color:white;font-size:16px;font-weight:700;
+  cursor:pointer;
+  transition:opacity .15s,transform .1s;
+  text-align:center;
+}
+.btn:hover{opacity:.9}
+.btn:active{transform:scale(.98)}
+.btn-outline{
+  background:transparent;
+  border:1.5px solid var(--border);
+  color:var(--text);
+}
+.btn-outline:hover{background:rgba(255,255,255,.05)}
+
+/* ---- QUIZ ---- */
+.quiz-top{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.q-counter{font-size:13px;color:var(--muted);font-weight:600}
+.phase-pill{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:4px 10px;border-radius:100px;
+}
+.phase-1{background:rgba(108,99,255,.2);color:#a78bfa;border:1px solid rgba(108,99,255,.3)}
+.phase-2{background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+
+.progress-track{
+  height:5px;background:rgba(255,255,255,.1);
+  border-radius:100px;overflow:hidden;margin-bottom:20px;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  border-radius:100px;
+  transition:width .4s cubic-bezier(.4,0,.2,1);
+}
+
+.q-type-label{
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;
+}
+.q-text{font-size:18px;font-weight:700;line-height:1.55;color:white}
+@media(max-width:480px){.q-text{font-size:16px}}
+
+/* ---- OPTIONS ---- */
+.opts{list-style:none;margin:16px 0 12px}
+.opt{margin-bottom:9px}
+
+.opt-label{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:13px 16px;
+  background:rgba(255,255,255,.04);
+  border:2px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  cursor:pointer;
+  transition:background .15s,border-color .15s;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.opt-label:hover{background:rgba(108,99,255,.12);border-color:rgba(108,99,255,.35)}
+.opt-label.sel{background:rgba(108,99,255,.18);border-color:var(--primary)}
+.opt-label.fb-correct{background:rgba(72,207,173,.14);border-color:var(--secondary)!important;pointer-events:none}
+.opt-label.fb-wrong{background:rgba(239,68,68,.12);border-color:var(--danger)!important;pointer-events:none}
+.opt-label.fb-missed{background:rgba(251,191,36,.12);border-color:var(--warning)!important;pointer-events:none}
+.opt-label.fb-neutral{pointer-events:none;opacity:.6}
+
+.opt-indicator{
+  flex-shrink:0;
+  width:21px;height:21px;
+  border:2px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;
+  transition:all .15s;
+  margin-top:1px;
+}
+.opt-indicator.check-box{border-radius:6px}
+.opt-indicator.radio-box{border-radius:50%}
+.sel .opt-indicator{background:var(--primary);border-color:var(--primary)}
+.fb-correct .opt-indicator{background:var(--secondary);border-color:var(--secondary)}
+.fb-wrong .opt-indicator{background:var(--danger);border-color:var(--danger)}
+.fb-missed .opt-indicator{background:var(--warning);border-color:var(--warning)}
+
+.opt-text{font-size:14.5px;line-height:1.45;color:var(--text)}
+.opt-input{display:none}
+
+/* ---- FEEDBACK ---- */
+.feedback{
+  display:none;
+  padding:14px 16px;border-radius:12px;margin-bottom:12px;
+  font-size:14.5px;font-weight:500;line-height:1.4;
+}
+.feedback.show{display:block}
+.feedback.ok{background:rgba(72,207,173,.12);border:1px solid rgba(72,207,173,.3);color:#48cfad}
+.feedback.fail{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171}
+
+/* ---- TRANSITION ---- */
+.transition-card{text-align:center;padding:56px 32px}
+.big-icon{font-size:72px;margin-bottom:20px;display:block}
+.transition-title{font-size:26px;font-weight:800;margin-bottom:12px}
+.transition-sub{color:var(--muted);font-size:15px;margin-bottom:32px;line-height:1.6}
+
+/* ---- RESULTS ---- */
+.results-card{text-align:center}
+.results-title{font-size:24px;font-weight:800;margin-bottom:28px}
+
+.score-ring{
+  position:relative;
+  width:150px;height:150px;
+  margin:0 auto 16px;
+}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:12}
+.score-ring-fill{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)}
+.score-center{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;
+}
+.score-pct{font-size:32px;font-weight:800;color:white}
+.score-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.stat-box{
+  background:rgba(255,255,255,.05);border-radius:14px;padding:18px 12px;text-align:center;
+}
+.stat-val{font-size:30px;font-weight:800;margin-bottom:4px}
+.stat-label{font-size:12px;color:var(--muted)}
+.stat-correct{color:var(--secondary)}
+.stat-wrong{color:var(--danger)}
+
+/* ---- LEADERBOARD ---- */
+.lb-title{font-size:17px;font-weight:700;margin-bottom:16px}
+.lb-entry{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 14px;border-radius:11px;
+  margin-bottom:8px;
+  background:rgba(255,255,255,.03);
+}
+.lb-entry.me{background:rgba(108,99,255,.14);border:1px solid rgba(108,99,255,.3)}
+.lb-rank{width:26px;text-align:center;font-weight:800;font-size:15px;color:var(--muted)}
+.lb-rank.r1{color:#ffd700}
+.lb-rank.r2{color:#c0c0c0}
+.lb-rank.r3{color:#cd7f32}
+.lb-name{flex:1;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-pct{font-size:14px;font-weight:700;color:var(--secondary)}
+.lb-empty{color:var(--muted);font-size:14px;text-align:center;padding:16px 0}
+
+/* ---- CONFETTI ---- */
+.confetto{
+  position:fixed;top:-10px;
+  width:10px;height:10px;
+  border-radius:2px;
+  animation:fall linear forwards;
+  pointer-events:none;z-index:9999;
+}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(720deg);opacity:0}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ======================== START ======================== -->
+<div id="scr-start" class="screen active">
+  <div class="card" style="text-align:center;padding-top:48px;padding-bottom:40px">
+    <div class="logo-wrap">📖</div>
+    <h1>INDES 2</h1>
+    <p class="subtitle">Probeprüfung Musterlösung</p>
+    <div class="badge-row">
+      <span class="badge">30 Fragen</span>
+      <span class="badge">Zufällige Reihenfolge</span>
+      <span class="badge">Rangliste</span>
+    </div>
+    <input type="text" id="name-input" placeholder="Dein Name eingeben..." maxlength="30" />
+    <button class="btn" onclick="startQuiz()">Prüfung starten 🚀</button>
+  </div>
+</div>
+
+<!-- ======================== QUIZ ======================== -->
+<div id="scr-quiz" class="screen">
+  <div class="quiz-top">
+    <span class="q-counter" id="q-counter">Frage 1 / 30</span>
+    <span class="phase-pill phase-1" id="phase-pill">Durchgang 1</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="q-type-label" id="q-type-label"></div>
+    <div class="q-text" id="q-text"></div>
+  </div>
+  <ul class="opts" id="opts-list"></ul>
+  <div class="feedback" id="feedback"></div>
+  <button class="btn" id="btn-confirm" onclick="handleBtn()">Antwort bestätigen</button>
+</div>
+
+<!-- ======================== TRANSITION ======================== -->
+<div id="scr-transition" class="screen">
+  <div class="card transition-card">
+    <span class="big-icon" id="tr-icon">🔄</span>
+    <div class="transition-title" id="tr-title"></div>
+    <div class="transition-sub" id="tr-sub"></div>
+    <button class="btn" onclick="beginPhase2()">Weiter →</button>
+  </div>
+</div>
+
+<!-- ======================== RESULTS ======================== -->
+<div id="scr-results" class="screen">
+  <div class="card results-card">
+    <div class="results-title">Dein Ergebnis 🎓</div>
+    <div class="score-ring">
+      <svg viewBox="0 0 150 150" width="150" height="150">
+        <circle class="score-ring-bg" cx="75" cy="75" r="60"/>
+        <circle class="score-ring-fill" id="ring-fill" cx="75" cy="75" r="60"
+          stroke="url(#grad)" stroke-dasharray="377" stroke-dashoffset="377"/>
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6c63ff"/>
+            <stop offset="100%" stop-color="#48cfad"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="score-center">
+        <div class="score-pct" id="r-pct">0%</div>
+        <div class="score-sub">1. Durchgang</div>
+      </div>
+    </div>
+    <p id="r-note" style="color:var(--muted);font-size:14px;margin-top:4px"></p>
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-val stat-correct" id="r-correct">0</div>
+        <div class="stat-label">Richtig ✓</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val stat-wrong" id="r-wrong">0</div>
+        <div class="stat-label">Falsch ✗</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lb-title">🏆 Rangliste</div>
+    <div id="leaderboard"></div>
+  </div>
+
+  <button class="btn btn-outline" onclick="restartQuiz()" style="margin-top:4px">Nochmal versuchen 🔁</button>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// =====================================================================
+// QUESTIONS
+// =====================================================================
+const QUESTIONS = [
+  {
+    q: "Was muss bei der Darstellung eines Storyboards beachtet werden?",
+    type: "multi",
+    opts: [
+      { t: "Die Story wird in Einzelbildern dargestellt, wobei die Reihenfolge der Bilder unwichtig ist.", c: false },
+      { t: "Das Storyboard stammt aus der Filmindustrie und wird nur dort in diesem Kontext eingesetzt.", c: false },
+      { t: "Ein Storyboard erzählt eine Geschichte in Form von Text und verzichtet gänzlich auf Bilder.", c: false },
+      { t: "Das Storyboard kann als Kreativitätstechnik genutzt werden wie z.B. zur Darstellung einer Customer Journey.", c: true }
+    ]
+  },
+  {
+    q: "Welche Art des Prototypings ermöglicht die radikalsten Entwicklungen und Ergebnisse?",
+    type: "single",
+    opts: [
+      { t: "Evolutionäres Prototyping", c: true },
+      { t: "Experimentelles Prototyping", c: false },
+      { t: "Exploratives Prototyping", c: false }
+    ]
+  },
+  {
+    q: "Die fünf zentralen Kriterien der Usability sind ...",
+    type: "multi",
+    opts: [
+      { t: "Zufriedenheit", c: true },
+      { t: "Intuition", c: false },
+      { t: "Effizienz", c: true },
+      { t: "Einprägsamkeit", c: true },
+      { t: "Einfachheit", c: false },
+      { t: "Lernbarkeit", c: true },
+      { t: "Fehlertoleranz", c: true }
+    ]
+  },
+  {
+    q: "Was ist das Besondere an einer Darstellung mittels BIKABLO?",
+    type: "multi",
+    opts: [
+      { t: "Man zeichnet sehr präzise und fotorealistische Details.", c: false },
+      { t: "BIKABLO kann gut zum Moderieren und Dokumentieren eingesetzt werden.", c: true },
+      { t: "Objekte und Personen werden stark vereinfacht mit Filzstiften dargestellt.", c: true },
+      { t: "BIKABLO ist ähnlich dem Analytischen Zeichnen.", c: false }
+    ]
+  },
+  {
+    q: "Welches sind die Prinzipien des Ansatzes Design Thinking?",
+    type: "single",
+    opts: [
+      { t: "Die Prinzipien Unklarheit, Re-Design, Mensch und Greifbarkeit.", c: true },
+      { t: "Die Prinzipien Klarheit, Re-Design, Mensch und Experiment.", c: false },
+      { t: "Die Prinzipien Unklarheit, Engineering, Mensch und Greifbarkeit.", c: false },
+      { t: "Die Prinzipien Klarheit, Re-Design, Mensch und Greifbarkeit.", c: false }
+    ]
+  },
+  {
+    q: "Wie sollte das Briefing für ein kreatives Projekt geschrieben sein?",
+    type: "multi",
+    opts: [
+      { t: "Das Briefing beschreibt die Aufgabenstellung und Informationen über Ziele, Zielgruppen, Konkurrenz, Wettbewerbsvorteile und Entwicklungen.", c: true },
+      { t: "Soll das gewünschte Ergebnis kreativ sein, muss das Briefing Spielraum für die Ergebnisgestaltung ermöglichen.", c: true },
+      { t: "Um ein kreatives Ergebnis zu erhalten, sollte das Briefing den Spielraum in der Ergebnisgestaltung beschreiben und eingrenzen.", c: false },
+      { t: "Das Briefing muss zwischen exakt vorgegebenen, geschlossenen und den offenen Ergebnisbestandteilen differenzieren.", c: true }
+    ]
+  },
+  {
+    q: "Welche Maschine sollte man für das Bearbeiten von Styrofoam im Normalfall NICHT verwenden?",
+    type: "multi",
+    opts: [
+      { t: "Stichsäge", c: true },
+      { t: "Dekupiersäge", c: true },
+      { t: "Heissdrahtschneidemaschine", c: false }
+    ]
+  },
+  {
+    q: "Was versteht man unter dem Begriff Modell, bzw. was definiert ein Modell?",
+    type: "multi",
+    opts: [
+      { t: "Das Wort Modell, ital. modello, aus lat. modulus, steht auch für die maßstäblich dreidimensionale Darstellung einer Sache.", c: true },
+      { t: "Das Modell steht immer in Bezug zu einem bestimmten Maßstab, der darüber entscheidet, welche Funktion das Modell haben kann.", c: true },
+      { t: "Die Model dient zum Formen von plastischem Material und wurde nur in der Renaissance eingesetzt.", c: false },
+      { t: "Modelle sind vorwiegend Repräsentationen von Phänomenen, Daten und Theorien.", c: false }
+    ]
+  },
+  {
+    q: "Welches sind die Phasen im Mikroprozess des Design Thinking Ansatz?",
+    type: "single",
+    opts: [
+      { t: "Empathize – Define – Ideate – Build – Test – Propose", c: true },
+      { t: "Empathize – Define – Build – Ideate – Test – Propose", c: false },
+      { t: "Empathize – Define – Ideate – Build – Test", c: false },
+      { t: "Empathize – Ideate – Build – Test – Propose", c: false }
+    ]
+  },
+  {
+    q: "Welchen Unterschied zwischen Wireframe-Entwicklung und Interface-Design gibt es?",
+    type: "multi",
+    opts: [
+      { t: "Wireframes werden genutzt, um das Interaktionskonzept ohne visuelles Erscheinungsbild zu entwickeln.", c: true },
+      { t: "Das Interface-Design dient dazu, dass die Bilder und Farben bereits im Interaktionskonzept festgelegt werden.", c: false },
+      { t: "Das Interface-Design wird, nachdem das Interaktionskonzept steht, erarbeitet und dann auf die Wireframes übertragen.", c: true },
+      { t: "Die Wireframes werden im finalen Look&Feel angelegt um dem Nutzer sofort das Aussehen zeigen zu können.", c: false }
+    ]
+  },
+  {
+    q: "Welche Vorteile hat es am Anfang einer Produktentwicklung mit leichten Materialien wie z.B. Papier oder Karton zu arbeiten?",
+    type: "multi",
+    opts: [
+      { t: "Es geht bei Papiermodellen vor allem um die sichtbaren Proportionen, damit man das Handling gut testen kann.", c: false },
+      { t: "Das Papiermodell wird direkt in eine CAD-Datei übertragen und dient dabei als detaillierte Vorlage.", c: false },
+      { t: "Der geringe Detaillierungsgrad von Papiermodellen hilft dabei, die Lösung noch in leicht veränderbarer Form zu halten.", c: true },
+      { t: "Papiermodelle dienen dem schnellen Sichtbarmachen von Ideen in einer 3-dimensionalen Form, um ein Problem schnell besser erkennen zu können.", c: true }
+    ]
+  },
+  {
+    q: "Worin liegt der Unterschied zwischen dem sog. Design Space Exploration (DSE) und dem Dark Horse Prototype (DHP)?",
+    type: "single",
+    opts: [
+      { t: "Im DSE wird der relevante Arbeitsbereich abgesteckt und im DHP werden nur einzelne Funktionalitäten analysiert um unrealistische Komponenten ausschliessen zu können.", c: false },
+      { t: "Der DSE ist ein abstrakter Prototyp (z.B. Empathy- oder Value-Map) und im DHP können sich Erkenntnisse grundlegend auf funktionale Faktoren auswirken.", c: false },
+      { t: "Im DSE fokussiert man sich auf eine zentrale Funktion und im DHP werden neue und verrückte Ideen formalisiert, um sich von festen Vorstellungen zu trennen.", c: false },
+      { t: "Im DSE wird der relevante Arbeitsbereich abgesteckt und im DHP werden neue und verrückte Ideen formalisiert, um sich von festen Vorstellungen zu trennen.", c: true }
+    ]
+  },
+  {
+    q: "Ein Falzbein ist...",
+    type: "single",
+    opts: [
+      { t: "... ein Falzwerkzeug aus Aluminium zum Rillen von Karton.", c: false },
+      { t: "... ein Werkzeug zum Bearbeiten von Metall, z.B. Aluminiumflächen.", c: false },
+      { t: "... ein aus Knochen, bzw. einem modernen Ersatzmaterial gefertigtes Ritz- und Falzwerkzeug.", c: true },
+      { t: "... ein Werkzeug, welches früher als Beinschiene verwendet wurde.", c: false }
+    ]
+  },
+  {
+    q: "Wie heisst das am weitesten verbreitete Format für die Schnittstelle CAD zu 3D-Druck?",
+    type: "single",
+    opts: [
+      { t: "*.stl (Standard Tessellation Language)", c: true },
+      { t: "*.drf (Diskrete Render Format)", c: false },
+      { t: "*.pdf (Portable Document Format)", c: false },
+      { t: "*.dxf (Drawing Interchange Format)", c: false }
+    ]
+  },
+  {
+    q: "Bearbeiten von Papier und Karton – wählen Sie die richtigen Antworten.",
+    type: "multi",
+    opts: [
+      { t: "Graupappe wird durch leichten Druck eines Falzbeines gerillt und zum Falten vorbereitet.", c: false },
+      { t: "Das Falten von Papier wird durch das Rillen mit starkem Druck eines Cutters erleichtert.", c: false },
+      { t: "Schneidemaschine oder Lasercutter sind zum Trennen von Karton eine gute Wahl.", c: true },
+      { t: "Präzise Ergebnisse erzielt man beim Schneiden von Pappe freihand mit einer Schneiderschere.", c: false }
+    ]
+  },
+  {
+    q: "Welche Aspekte sind bei der Entwicklung der Usability viraler Interaktion zu berücksichtigen?",
+    type: "multi",
+    opts: [
+      { t: "Visuelle Klarheit und Lesbarkeit", c: true },
+      { t: "Barrierefreiheit und Vorgabe-Werte", c: true },
+      { t: "Farbsystem und Branding", c: false },
+      { t: "Navigation und Orientierung", c: true }
+    ]
+  },
+  {
+    q: "Welche Faktoren machen ein Scribble schnell verständlich und lesbar?",
+    type: "multi",
+    opts: [
+      { t: "Die Andeutung des Umfeldes, bzw. des Nutzerkontextes.", c: true },
+      { t: "Das detaillierte Darstellen der Objekte.", c: false },
+      { t: "Das Weglassen von ausführlichen Erklärungen.", c: true },
+      { t: "Das leichte Abstrahieren der dargestellten Objekte.", c: true },
+      { t: "Die Erkennbarkeit und Klarheit durch eine handgerenderte Darstellung.", c: false }
+    ]
+  },
+  {
+    q: "Worauf sollte man bei der Erstellung von analytischen Zeichnungen achten?",
+    type: "multi",
+    opts: [
+      { t: "Die Konstruktion der Grundkörper basiert auf Abschätzen der richtigen Proportionen zueinander.", c: true },
+      { t: "Am besten man verwendet die Froschperspektive zur Darstellung des Objektes im Raum.", c: false },
+      { t: "Es sollten alle Linien, die zur Konstruktion der Zeichnung dienen, zum Schluss wegradiert werden.", c: false },
+      { t: "Die Zeichnung gewinnt an Klarheit, wenn man mit dicken Filzstiften arbeitet.", c: false }
+    ]
+  },
+  {
+    q: "Was ist das sog. User-Interface Design?",
+    type: "multi",
+    opts: [
+      { t: "Die Gestaltung des Interface kann sich z.B. auf Screens, Fernbedienungen oder Schaltungen beziehen.", c: true },
+      { t: "Das User-Interface ist eine Schnittstelle, welche es ermöglicht mit «Maschinen» zu interagieren.", c: true },
+      { t: "Bei der Gestaltung liegt der Fokus auf der Darstellung von Diagrammen und Fotografien.", c: false },
+      { t: "Bei der Gestaltung ist es wichtig dass die Bedienung intuitiv ist, es eine einfache Handhabung sowie gute Orientierung in Prozess gibt.", c: true }
+    ]
+  },
+  {
+    q: "Was ist das Besondere an einem Skribble?",
+    type: "multi",
+    opts: [
+      { t: "Quantität kommt vor Qualität und schnell erstellte Skribbles dienen der Klärung einer Idee.", c: true },
+      { t: "Ein Scribble ist eine gut ausgearbeitete Zeichnung und stellt die Struktur der Idee dar.", c: false },
+      { t: "Es ist nicht wichtig, etwas perfekt auszuarbeiten, sondern das Erschaffen einer lockeren Freihandzeichnung.", c: true },
+      { t: "Beim Scribblen werden flüchtige Ideenskizzen mit Stift auf ein Papier gekritzelt. Dabei wird auf Details verzichtet.", c: true }
+    ]
+  },
+  {
+    q: "Was ist beim Kleben von Styrofoam speziell zu beachten?",
+    type: "multi",
+    opts: [
+      { t: "Es ist auf saubere, mit Verdünner gereinigte Oberflächen zu achten.", c: false },
+      { t: "Es ist darauf zu achten, dass der Kleber keine Lösungsmittel enthält.", c: true },
+      { t: "Es ist darauf zu achten, dass der Kleber Lösungsmittel enthält, damit das Material zusammenschmelzen kann.", c: false }
+    ]
+  },
+  {
+    q: "Welche verschiedenen Arten der konzeptionellen Darstellung (2D) gibt es?",
+    type: "multi",
+    opts: [
+      { t: "Bikablo und Storyboards", c: true },
+      { t: "Aquarell und Ölgemälde", c: false },
+      { t: "Detailzeichnungen", c: true },
+      { t: "Analytisches Zeichnen", c: true },
+      { t: "Skizzieren und Skribbles", c: true },
+      { t: "Moodboards", c: true }
+    ]
+  },
+  {
+    q: "Was muss beim Human-centred Design berücksichtigt werden?",
+    type: "multi",
+    opts: [
+      { t: "Die Gestaltung einer Sache muss vor allem dem Gestalter gefallen.", c: false },
+      { t: "Nach der Ideenphase geht man direkt ohne Testen in das Umsetzen.", c: false },
+      { t: "Der Nutzer steht im Zentrum des Gestaltungsprozesses.", c: true },
+      { t: "Man will die Bedürfnisse und Motivationen der Nutzer verstehen.", c: true }
+    ]
+  },
+  {
+    q: "Was ist eine Explosionszeichnung?",
+    type: "multi",
+    opts: [
+      { t: "Es ist eine Darstellung, welche nur die wichtigsten Teile zeigt.", c: false },
+      { t: "Es ist im Normalfall eine isometrische Darstellung.", c: true },
+      { t: "Es ist im Normalfall eine 3-Punkt-Perspektive.", c: false },
+      { t: "Es ist im Normalfall eine Darstellung von technischen Teilen oder Maschinen.", c: true },
+      { t: "Im Fachjargon wird hier auch der Begriff Sprengzeichnung verwendet.", c: true }
+    ]
+  },
+  {
+    q: "Welche plastischen Modelltypen gibt es im klassischen Produktdesign?",
+    type: "multi",
+    opts: [
+      { t: "Papiermodell", c: true },
+      { t: "Volumenmodell", c: true },
+      { t: "Mock-up", c: true },
+      { t: "Designmodell", c: true },
+      { t: "Dark Horse Prototype", c: false },
+      { t: "Funktionsmodell", c: true },
+      { t: "Functional Prototype", c: false },
+      { t: "Nullserie oder Prototyp", c: true }
+    ]
+  },
+  {
+    q: "Welche Art von Modell oder Prototyp wird in der interdisziplinären Produktentwicklung genutzt? (Modellbegriff nach Frigg & Hartmann)",
+    type: "single",
+    opts: [
+      { t: "Theorie-orientierte Modelle (Strukturelle und semantische Ansicht der Theorien / Modelle unabhängig von Theorien)", c: false },
+      { t: "Darstellungs-orientierte Modelle (Physische oder Fiktive Objekte / Beschreibungen / Gleichungen / Manipulierte Darstellungen)", c: false },
+      { t: "Philosophische Modelle (Realismus versus Antirealismus / Modelle und die Naturgesetze / Modelle zur wissenschaftlichen Erklärung)", c: false },
+      { t: "Erkenntnis-orientierte Modelle (Experiment und Simulation / Übertragung auf Zielkontext)", c: true }
+    ]
+  },
+  {
+    q: "Welche der folgenden Aussagen beschreibt die Eigenschaften der drei Kunststoffarten Duroplaste, Elastomere und Thermoplaste KORREKT in Bezug auf ihre Eignung im Modellbau?",
+    type: "multi",
+    opts: [
+      { t: "Thermoplaste sind für den Modellbau ungeeignet, da sie sich bei Erwärmung nicht verformen lassen; Elastomere sind ideal für tragende Strukturen.", c: false },
+      { t: "Durch die thermisch-plastische und reversible (umkehrbar) Verformbarkeit der Thermoplaste eignen sie sich besonders gut für den Modellbau und insbesondere für das Tiefziehen.", c: true },
+      { t: "Elastomere lassen sich durch Erwärmung gut umformen und sind daher vielseitig einsetzbar im Modellbau; Duroplaste werden bevorzugt für transparente Fensterteile verwendet.", c: false },
+      { t: "Polystyrol-Hartschaumstoffe werden als Dämmstoff eingesetzt, sind aber auch sehr gut bearbeitbar und haben eine homogene Struktur. Fein- und mittelporiger Hartschaum aus extrudiertem Polystyrol ist der Standardwerkstoff im Modellbau.", c: true }
+    ]
+  },
+  {
+    q: "Was ist eine Funktionszeichnung?",
+    type: "single",
+    opts: [
+      { t: "Eine Darstellung, welche das Objekt in transparenter Weise zeigt.", c: false },
+      { t: "Eine Darstellung, welche den Funktionsablauf eines Objektes zeigt. Häufig unter Einsatz von Pfeilen.", c: true },
+      { t: "Eine Zeichnung, welche wie eine Explosionszeichnung aussieht.", c: false },
+      { t: "Eine Zeichnung mit zahlreichen Symbolen in der Ablaufdarstellung.", c: false }
+    ]
+  },
+  {
+    q: "Welche Prototyp-Bezeichnungen gehören zum Makroprozess im Design Thinking Ansatz?",
+    type: "multi",
+    opts: [
+      { t: "Final Prototype", c: true },
+      { t: "Funktionsmodell", c: false },
+      { t: "X-is-Finished Prototype", c: true },
+      { t: "Design Space Exploration", c: true },
+      { t: "Funky Prototype", c: true },
+      { t: "Mock-Up", c: false },
+      { t: "Dark Horse Prototype", c: true },
+      { t: "Functional Prototype", c: true }
+    ]
+  },
+  {
+    q: "Clay ist ...",
+    type: "multi",
+    opts: [
+      { t: "... von Vorteil im Formfindungsprozess für Fahrzeuge oder andere grossvolumige Objekte.", c: true },
+      { t: "... kein geeignetes Material um Entscheidungen über Formverläufe zu treffen.", c: false },
+      { t: "... aus Wachs, Öl, dem Füllstoff Schwefel und Pigmenten zusammengesetzt.", c: true },
+      { t: "... ein Industrieplastilin oder Modellierton.", c: true }
+    ]
+  }
+];
+
+// =====================================================================
+// STATE
+// =====================================================================
+let userName = '';
+let phase1Queue = [];
+let phase2Queue = [];
+let currentQueue = [];
+let currentIdx = 0;
+let phase = 1;
+let phase1Correct = 0;
+let phase1Wrong = 0;
+let waitingForNext = false;
+
+let shuffledOpts = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  const inp = document.getElementById('name-input');
+  const n = inp.value.trim();
+  if (!n) { inp.focus(); inp.style.borderColor='#ef4444'; return; }
+  inp.style.borderColor='';
+  userName = n;
+  phase1Queue = shuffle(QUESTIONS.map((_,i)=>i));
+  currentQueue = phase1Queue;
+  currentIdx = 0;
+  phase = 1;
+  phase1Correct = 0;
+  phase1Wrong = 0;
+  phase2Queue = [];
+  waitingForNext = false;
+  showScreen('scr-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const total = currentQueue.length;
+  const num = currentIdx + 1;
+  const qIdx = currentQueue[currentIdx];
+  const q = QUESTIONS[qIdx];
+
+  document.getElementById('q-counter').textContent = `Frage ${num} / ${total}`;
+  const pill = document.getElementById('phase-pill');
+  if (phase === 1) {
+    pill.textContent = 'Durchgang 1';
+    pill.className = 'phase-pill phase-1';
+  } else {
+    pill.textContent = 'Wiederholung';
+    pill.className = 'phase-pill phase-2';
+  }
+  document.getElementById('progress-fill').style.width = ((num-1)/total*100) + '%';
+
+  document.getElementById('q-type-label').textContent =
+    q.type === 'multi' ? '☑ Mehrere Antworten möglich' : '○ Eine Antwort richtig';
+  document.getElementById('q-text').textContent = q.q;
+
+  shuffledOpts = shuffle(q.opts.map((_,i)=>i));
+  const list = document.getElementById('opts-list');
+  list.innerHTML = '';
+  shuffledOpts.forEach((origIdx, position) => {
+    const opt = q.opts[origIdx];
+    const li = document.createElement('li');
+    li.className = 'opt';
+    const indClass = q.type === 'multi' ? 'check-box' : 'radio-box';
+    li.innerHTML = `
+      <label class="opt-label" id="opt-${position}" onclick="selectOpt(${position}, ${origIdx})">
+        <div class="opt-indicator ${indClass}" id="ind-${position}"></div>
+        <span class="opt-text">${escHtml(opt.t)}</span>
+      </label>`;
+    list.appendChild(li);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+
+  const btn = document.getElementById('btn-confirm');
+  btn.textContent = 'Antwort bestätigen';
+  waitingForNext = false;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function selectOpt(position, origIdx) {
+  if (waitingForNext) return;
+  const qIdx = currentQueue[currentIdx];
+  const q = QUESTIONS[qIdx];
+  const label = document.getElementById('opt-' + position);
+  const ind = document.getElementById('ind-' + position);
+
+  if (q.type === 'single') {
+    shuffledOpts.forEach((_,pos) => {
+      document.getElementById('opt-' + pos).classList.remove('sel');
+      document.getElementById('ind-' + pos).textContent = '';
+    });
+    label.classList.add('sel');
+    ind.textContent = '●';
+  } else {
+    if (label.classList.contains('sel')) {
+      label.classList.remove('sel');
+      ind.textContent = '';
+    } else {
+      label.classList.add('sel');
+      ind.textContent = '✓';
+    }
+  }
+}
+
+function handleBtn() {
+  if (waitingForNext) {
+    currentIdx++;
+    if (currentIdx >= currentQueue.length) {
+      endOfQueue();
+    } else {
+      renderQuestion();
+    }
+    return;
+  }
+
+  const qIdx = currentQueue[currentIdx];
+  const q = QUESTIONS[qIdx];
+
+  const selected = new Set();
+  shuffledOpts.forEach((origIdx, pos) => {
+    if (document.getElementById('opt-' + pos).classList.contains('sel')) {
+      selected.add(origIdx);
+    }
+  });
+
+  if (selected.size === 0) {
+    const fb = document.getElementById('feedback');
+    fb.textContent = '⚠️ Bitte mindestens eine Antwort auswählen.';
+    fb.className = 'feedback fail show';
+    return;
+  }
+
+  const correctSet = new Set(q.opts.map((o,i)=>o.c?i:-1).filter(i=>i>=0));
+  const isCorrect = setsEqual(selected, correctSet);
+
+  shuffledOpts.forEach((origIdx, pos) => {
+    const label = document.getElementById('opt-' + pos);
+    const ind = document.getElementById('ind-' + pos);
+    const wasSelected = selected.has(origIdx);
+    const isCorrectOpt = correctSet.has(origIdx);
+
+    label.style.pointerEvents = 'none';
+
+    if (wasSelected && isCorrectOpt) {
+      label.classList.remove('sel');
+      label.classList.add('fb-correct');
+      ind.textContent = '✓';
+    } else if (wasSelected && !isCorrectOpt) {
+      label.classList.remove('sel');
+      label.classList.add('fb-wrong');
+      ind.textContent = '✗';
+    } else if (!wasSelected && isCorrectOpt) {
+      label.classList.add('fb-missed');
+      ind.textContent = '!';
+    } else {
+      label.classList.add('fb-neutral');
+    }
+  });
+
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    fb.textContent = '✅ Richtig! Super gemacht.';
+    fb.className = 'feedback ok show';
+  } else {
+    fb.textContent = '❌ Falsch. Die markierten Antworten (gelb) wären noch korrekt gewesen.';
+    fb.className = 'feedback fail show';
+  }
+
+  if (phase === 1) {
+    if (isCorrect) phase1Correct++;
+    else {
+      phase1Wrong++;
+      phase2Queue.push(qIdx);
+    }
+  }
+
+  const btn = document.getElementById('btn-confirm');
+  btn.textContent = currentIdx + 1 < currentQueue.length ? 'Nächste Frage →' : 'Weiter →';
+  waitingForNext = true;
+
+  document.getElementById('progress-fill').style.width =
+    ((currentIdx+1)/currentQueue.length*100) + '%';
+}
+
+function setsEqual(a, b) {
+  if (a.size !== b.size) return false;
+  for (const v of a) if (!b.has(v)) return false;
+  return true;
+}
+
+function endOfQueue() {
+  if (phase === 1) {
+    if (phase2Queue.length === 0) {
+      showResults();
+    } else {
+      document.getElementById('tr-icon').textContent = '🔄';
+      document.getElementById('tr-title').textContent = 'Erster Durchgang abgeschlossen!';
+      document.getElementById('tr-sub').innerHTML =
+        `Du hattest <strong style="color:#48cfad">${phase1Correct}</strong> von <strong>${QUESTIONS.length}</strong> Fragen richtig.<br><br>` +
+        `Jetzt kommen die <strong style="color:#fbbf24">${phase2Queue.length}</strong> falschen Fragen nochmal!`;
+      showScreen('scr-transition');
+    }
+  } else {
+    showResults();
+  }
+}
+
+function beginPhase2() {
+  phase = 2;
+  currentQueue = shuffle(phase2Queue);
+  currentIdx = 0;
+  waitingForNext = false;
+  showScreen('scr-quiz');
+  renderQuestion();
+}
+
+function showResults() {
+  const total = QUESTIONS.length;
+  const pct = Math.round(phase1Correct / total * 100);
+
+  document.getElementById('r-pct').textContent = pct + '%';
+  document.getElementById('r-correct').textContent = phase1Correct;
+  document.getElementById('r-wrong').textContent = phase1Wrong;
+  document.getElementById('r-note').textContent =
+    `${phase1Correct} von ${total} Fragen im ersten Durchgang richtig`;
+
+  const circumference = 2 * Math.PI * 60;
+  const offset = circumference * (1 - pct/100);
+  setTimeout(() => {
+    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  }, 100);
+
+  saveScore(userName, pct, phase1Correct, total);
+  renderLeaderboard();
+
+  showScreen('scr-results');
+  if (pct >= 80) launchConfetti();
+}
+
+function saveScore(name, pct, correct, total) {
+  let lb = JSON.parse(localStorage.getItem('mg_quiz_lb') || '[]');
+  lb.push({ name, pct, correct, total, date: new Date().toLocaleDateString('de-CH') });
+  lb.sort((a,b) => b.pct - a.pct || b.correct - a.correct);
+  lb = lb.slice(0,20);
+  localStorage.setItem('mg_quiz_lb', JSON.stringify(lb));
+}
+
+function renderLeaderboard() {
+  const lb = JSON.parse(localStorage.getItem('mg_quiz_lb') || '[]');
+  const el = document.getElementById('leaderboard');
+  if (lb.length === 0) {
+    el.innerHTML = '<div class="lb-empty">Noch keine Einträge</div>';
+    return;
+  }
+  const rankEmojis = ['🥇','🥈','🥉'];
+  const rankClass = ['r1','r2','r3'];
+  el.innerHTML = lb.slice(0,10).map((e,i) => {
+    const isMe = e.name === userName && e.pct === Math.round(phase1Correct/QUESTIONS.length*100);
+    const rankLabel = i < 3 ? rankEmojis[i] : (i+1);
+    const rClass = i < 3 ? rankClass[i] : '';
+    return `<div class="lb-entry ${isMe?'me':''}">
+      <span class="lb-rank ${rClass}">${rankLabel}</span>
+      <span class="lb-name">${escHtml(e.name)}</span>
+      <span class="lb-pct">${e.pct}% (${e.correct}/${e.total})</span>
+    </div>`;
+  }).join('');
+}
+
+function launchConfetti() {
+  const colors = ['#6c63ff','#48cfad','#fbbf24','#f87171','#60a5fa','#a78bfa','#34d399'];
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetto';
+      c.style.left = Math.random()*100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.width = (6+Math.random()*8) + 'px';
+      c.style.height = (6+Math.random()*8) + 'px';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      c.style.animationDuration = (1.5+Math.random()*2) + 's';
+      c.style.animationDelay = Math.random()*0.5 + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }, i * 20);
+  }
+}
+
+function restartQuiz() {
+  showScreen('scr-start');
+  document.getElementById('name-input').value = '';
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+document.getElementById('name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startQuiz();
+});
+</script>
+</body>
+</html>
